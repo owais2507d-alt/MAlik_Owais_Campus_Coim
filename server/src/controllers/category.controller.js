@@ -13,21 +13,40 @@ export const listCategories = asyncHandler(async (req, res) => {
   if (type) filter.type = type;
 
   const categories = await Category.find(filter).sort({ type: 1, name: 1 });
-  return sendSuccess(res, { categories });
+
+  // de-dupe by (type, name) — a user copy must never shadow a system default twice
+  const seen = new Map();
+  const deduped = [];
+  for (const cat of categories) {
+    const key = `${cat.type}:${cat.name.trim().toLowerCase()}`;
+    const existing = seen.get(key);
+    if (!existing) {
+      seen.set(key, cat);
+      deduped.push(cat);
+    } else if (existing.userId !== null && cat.userId === null) {
+      // system default is canonical: replace the personal copy
+      seen.set(key, cat);
+      deduped[deduped.indexOf(existing)] = cat;
+    }
+  }
+
+  return sendSuccess(res, { categories: deduped });
 });
 
 export const createCategory = asyncHandler(async (req, res) => {
   const { name, type, icon, color } = req.body;
+  const trimmed = String(name).trim();
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const exists = await Category.findOne({
-    userId: req.user.id,
-    name: name.toLowerCase() === name.toLowerCase() ? name : name,
+    $or: [{ userId: req.user.id }, { userId: null, isDefault: true }],
     type,
+    name: { $regex: `^${escaped}$`, $options: "i" },
   });
   if (exists) throw ApiError.conflict("Category with this name already exists");
 
   const category = await Category.create({
     userId: req.user.id,
-    name,
+    name: trimmed,
     type,
     icon: icon || "tag",
     color: color || "#F59E0B",

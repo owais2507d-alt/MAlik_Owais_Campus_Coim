@@ -12,7 +12,7 @@ async function chatGroq(messages, opts = {}) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: env.GROQ_MODEL || "llama-3.3-70b-versatile",
+      model: env.GROQ_MODEL || "openai/gpt-oss-120b",
       messages,
       temperature: opts.temperature ?? 0.3,
       max_tokens: opts.maxTokens ?? 800,

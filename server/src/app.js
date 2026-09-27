@@ -11,9 +11,29 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+const allowedOrigins = [
+  env.CLIENT_URL,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3001",
+];
+
 app.use(
   cors({
-    origin: [env.CLIENT_URL, "http://localhost:3000", "http://127.0.0.1:3000"],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      if (
+        env.NODE_ENV === "development" &&
+        (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+          /^https:\/\/[a-z0-9-]+\.ngrok(-free)?\.(dev|app|io)$/.test(origin))
+      ) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    },
     credentials: true,
   })
 );

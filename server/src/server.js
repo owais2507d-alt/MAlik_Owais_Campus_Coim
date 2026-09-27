@@ -3,11 +3,13 @@ import app from "./app.js";
 import { env } from "./config/env.js";
 import { connectDB } from "./config/db.js";
 import { seedSystemCategories } from "./seeds/categories.js";
+import { seedDemoUsers } from "./seeds/users.js";
 import { initSocket } from "./config/socket.js";
 
 async function main() {
   await connectDB();
   await seedSystemCategories();
+  await seedDemoUsers();
 
   const server = http.createServer(app);
   initSocket(server);

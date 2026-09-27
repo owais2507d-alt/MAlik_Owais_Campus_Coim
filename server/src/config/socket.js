@@ -7,8 +7,28 @@ const userSockets = new Map(); // userId -> Set<socketId>
 
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
+    // accept /socket.io and /socket.io/ (proxies may strip the slash)
+    addTrailingSlash: false,
     cors: {
-      origin: [env.CLIENT_URL, "http://localhost:3000"],
+      origin: (origin, callback) => {
+        const allowed = [
+          env.CLIENT_URL,
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://127.0.0.1:3000",
+          "http://127.0.0.1:3001",
+        ];
+        if (
+          !origin ||
+          allowed.includes(origin) ||
+          (env.NODE_ENV === "development" &&
+            (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+              /^https:\/\/[a-z0-9-]+\.ngrok(-free)?\.(dev|app|io)$/.test(origin)))
+        ) {
+          return callback(null, true);
+        }
+        callback(null, false);
+      },
       credentials: true,
     },
   });
