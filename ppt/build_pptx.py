@@ -9,7 +9,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.oxml.ns import qn
 
 SHOTS = r"D:\campus-coin-master\ppt\screenshots"
-OUT = r"D:\campus-coin-master\Campus-Coin-Project.pptx"
+OUT = r"D:\campus-coin-master\Campus-Coin-Team-Bombers.pptx"
 
 # palette
 BG      = RGBColor(0x0C, 0x0C, 0x10)
@@ -196,7 +196,7 @@ def arrow(s, x, y, w, h, color=HONEY):
     return a
 
 
-TOTAL = 25
+TOTAL = 26
 n = 0
 
 # ============================================================ 1 TITLE
@@ -208,9 +208,11 @@ blk.fill.solid(); blk.fill.fore_color.rgb = HONEY; blk.line.fill.background(); b
 chip(s, 1.0, 1.55, 2.6, 0.42, "FULL PROJECT WALKTHROUGH", HONEY, RGBColor(0x1A, 0x12, 0x00), 11)
 txt(s, 1.0, 2.15, 11, 1.1, "Campus Coin", 54, TEXT, True)
 txt(s, 1.0, 3.15, 11, 0.6, "NextGen BudgetBee — Student Budget Tracker", 22, HONEY_L, True)
-txt(s, 1.0, 3.85, 10.5, 1.1,
+chip(s, 1.0, 3.82, 2.5, 0.44, "TEAM BOMBERS", HONEY, RGBColor(0x1A, 0x12, 0x00), 13)
+txt(s, 3.7, 3.86, 8.5, 0.4, "Muhammad Bilawal · Muhammad Owais · Muhammad Esam · Muhammad Muneeb · Syed Haider", 13, TEXT, True)
+txt(s, 1.0, 4.5, 10.5, 0.9,
     "A complete MERN-style full-stack app: Next.js 14 client + Express MVC API + MongoDB Atlas + Socket.IO live alerts + AI (Groq / rule-based fallback).\nEvery controller, model, service, page and feature — described in one deck.",
-    14, MUTED)
+    13.5, MUTED)
 # tech chips
 techs = ["Next.js 14", "React 18", "Tailwind CSS", "Express 4", "Mongoose 8", "MongoDB Atlas",
          "JWT + OTP", "Socket.IO", "Zod", "Recharts", "jsPDF", "Zustand", "Groq AI"]
@@ -220,8 +222,40 @@ for t in techs:
     if cx + w > 12.6: break
     chip(s, cx, 5.35, w, 0.36, t, PANEL2, HONEY_L, 10.5)
     cx += w + 0.14
-txt(s, 1.0, 6.35, 11, 0.4, "Client :3000   ·   API :5000   ·   GitHub: mALIK-bILAWAL/CAMPUS-COIN", 12, MUTED)
+txt(s, 1.0, 6.35, 11, 0.4, "Client :3000   ·   API :5000   ·   github.com/owais2507d-alt/MAlik_Owais_Campus_Coim", 12, MUTED)
 footer(s, n, TOTAL)
+
+# ============================================================ 2 MEET THE TEAM
+n += 1
+s = slide(); header(s, "Meet the Team", kicker="CAMPUS COIN · TEAM BOMBERS"); footer(s, n, TOTAL)
+team = [
+    ("MUHAMMAD BILAWAL", "Project Lead", "Backend & database\nAPI architecture, models,\nseeds & Atlas setup"),
+    ("MUHAMMAD OWAIS", "Full-Stack Dev", "Auth, OTP, admin panel\nngrok tunnel + deployment\nGitHub / integration"),
+    ("MUHAMMAD ESAM", "AI Engineer", "Categorize, insights,\nBudgetBee chat,\ntips engine"),
+    ("MUHAMMAD MUNEEB", "Frontend Dev", "Dashboard, reports\ncharts, budgets UI,\ndark theme"),
+    ("SYED HAIDER", "QA & Docs", "Playwright E2E suite,\nrequirement coverage,\nproject docs"),
+]
+cw, gap = 2.3, 0.22
+x0 = (SW - (cw * 5 + gap * 4)) / 2
+for i, (name, role, desc) in enumerate(team):
+    x = x0 + i * (cw + gap)
+    box(s, x, 1.6, cw, 4.5, PANEL, LINE)
+    bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(1.6), Inches(cw), Pt(4))
+    bar.fill.solid(); bar.fill.fore_color.rgb = HONEY; bar.line.fill.background(); bar.shadow.inherit = False
+    # avatar circle with initial
+    circ = s.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x + cw / 2 - 0.5), Inches(1.95), Inches(1.0), Inches(1.0))
+    circ.fill.solid(); circ.fill.fore_color.rgb = PANEL2; circ.line.color.rgb = HONEY; circ.line.width = Pt(2)
+    circ.shadow.inherit = False
+    tf = circ.text_frame; tf.word_wrap = False
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    r = p.add_run(); r.text = name.split()[-1][0]
+    r.font.size = Pt(30); r.font.bold = True; r.font.color.rgb = HONEY_L; r.font.name = "Segoe UI"
+    txt(s, x + 0.1, 3.15, cw - 0.2, 0.6, name, 12, TEXT, True, PP_ALIGN.CENTER)
+    chip(s, x + 0.2, 3.75, cw - 0.4, 0.34, role, HONEY, RGBColor(0x1A, 0x12, 0x00), 10)
+    txt(s, x + 0.12, 4.3, cw - 0.24, 1.7, desc, 10.5, MUTED, align=PP_ALIGN.CENTER)
+box(s, x0, 6.35, cw * 5 + gap * 4, 0.55, PANEL2, LINE)
+txt(s, x0 + 0.2, 6.46, cw * 5 + gap * 4 - 0.4, 0.35,
+    "Campus Coin · NextGen BudgetBee — built end-to-end by Team Bombers", 12.5, HONEY_L, True, PP_ALIGN.CENTER)
 
 # ============================================================ 2 OVERVIEW
 n += 1
@@ -853,20 +887,22 @@ rich(s, 0.75, 5.55, 12, 1.2, [
     [("Login page has one-click demo fill buttons.  Data persists in MongoDB Atlas (cluster0.wyyaakz).", 11.5, MUTED, False)],
 ])
 
-# ============================================================ 25 END
+# ============================================================ 26 END
 n += 1
 s = slide()
 blk = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Inches(0.35), prs.slide_height)
 blk.fill.solid(); blk.fill.fore_color.rgb = HONEY; blk.line.fill.background(); blk.shadow.inherit = False
-txt(s, 1.0, 2.0, 11.5, 1.0, "Thank You", 52, TEXT, True)
-txt(s, 1.0, 3.1, 11.5, 0.6, "Campus Coin — NextGen BudgetBee is ready to demo", 20, HONEY_L, True)
-txt(s, 1.0, 3.9, 11, 1.6,
+txt(s, 1.0, 1.9, 11.5, 1.0, "Thank You", 52, TEXT, True)
+chip(s, 1.0, 3.0, 2.5, 0.44, "TEAM BOMBERS", HONEY, RGBColor(0x1A, 0x12, 0x00), 13)
+txt(s, 3.7, 3.04, 8.5, 0.4, "Bilawal · Owais · Esam · Muneeb · Haider", 15, TEXT, True)
+txt(s, 1.0, 3.7, 11.5, 0.6, "Campus Coin — NextGen BudgetBee is ready to demo", 20, HONEY_L, True)
+txt(s, 1.0, 4.4, 11, 1.3,
 """This deck covered: architecture · every route · all 11 controllers · 10 models · services (tips, alerts, notify) ·
 AI layer (categorize / insights / chat) · Socket.IO realtime · 21 client pages · auth (OTP + JWT) ·
-Tier 1/2/3 feature status · run instructions.""", 13.5, MUTED)
-chip(s, 1.0, 5.7, 3.4, 0.44, "UI  http://localhost:3000", PANEL2, HONEY_L, 12)
-chip(s, 4.6, 5.7, 3.4, 0.44, "API  http://localhost:5000", PANEL2, HONEY_L, 12)
-chip(s, 8.2, 5.7, 4.0, 0.44, "github.com/mALIK-bILAWAL/CAMPUS-COIN", PANEL2, HONEY_L, 11)
+Tier 1/2/3 feature status · run instructions.   Questions?""", 13.5, MUTED)
+chip(s, 1.0, 6.1, 3.4, 0.44, "UI  http://localhost:3000", PANEL2, HONEY_L, 12)
+chip(s, 4.6, 6.1, 3.4, 0.44, "API  http://localhost:5000", PANEL2, HONEY_L, 12)
+chip(s, 8.2, 6.1, 4.3, 0.44, "github.com/owais2507d-alt/MAlik_Owais_Campus_Coim", PANEL2, HONEY_L, 10.5)
 footer(s, n, TOTAL)
 
 prs.save(OUT)
